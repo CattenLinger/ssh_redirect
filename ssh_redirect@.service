@@ -1,0 +1,11 @@
+[Unit]
+Description=Service for autossh with socks proxy supporting
+Wants=multi-user.target
+Requires=shadowsocks-libev-local@shinonometn.service
+
+[Service]
+Environment="conf_path=/opt/ssh_redirect"
+ExecStart=/opt/ssh_redirect/ssh_redirect ${conf_path}/%i.conf
+
+[Install]
+WantedBy=multi-user.target

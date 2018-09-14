@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#
+# Autossh script with socks proxy supporting
+#
+# The origin command is 
+# autossh -M ${monitor_port} -NR ${remote_dest_port}:127.0.0.1:${local_src_port} cattenlinger@shinonometn.com 
+#  -p ${port} -o ProxyCommand="nc -x ${socks_proxy} %h %p"
+#
+# Author     : cattenlinger
+# References : https://ieevee.com/tech/2017/10/19/ssh-over-socks5.html
+#              https://www.cnblogs.com/eshizhan/archive/2012/07/16/2592902.html
+#              https://www.howtoing.com/concatenate-two-string-variables-in-bash-script
+#
+
+the_cmd="autossh";
+
+# Read config
+source ${1};
+
+# Concating command
+
+# Setup monitor port
+the_cmd=${the_cmd}" -M ${monitor_port}";
+echo "Monitor port is ${monitor_port}.";
+
+# Setup source and destination
+the_cmd=${the_cmd}" -NR ${remote_dest_port}:127.0.0.1:${local_src_port}"
+echo "Forward port ${local_src_port} to the port ${remote_dest_port} on remote host."
+
+# If port was specifited, setup remote ssh port
+if [ ! ${port} ]; then 
+    echo "Using default port.";
+else
+    the_cmd=${the_cmd}" -p ${port}";
+    echo "Remote ssh port is ${port}.";
+fi
+
+# Setup identifiy file
+if [ ! ${identity_file} ]; then
+    echo "Use default identity.";
+else
+    the_cmd=${the_cmd}" -i ${identity_file}";
+fi
+
+# Setup host and user
+the_cmd=${the_cmd}" ${remote_user}@${remote_host}";
+echo "User ${remote_user} at ${remote_host}.";
+
+# If using proxy, add proxy options
+if [ ! ${socks_proxy} ]; then
+    echo "No proxy specified.";
+else
+    the_cmd=${the_cmd}" -o ProxyCommand='nc -x ${socks_proxy} %h %p'";
+    echo "Using proxy server : ${socks_proxy}.";
+fi
+
+echo "Autossh started.";
+
+eval ${the_cmd};
+
+rm -rf "${socks_proxy}";
+
+echo "Autossh stoped."
