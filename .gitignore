@@ -1,2 +1,6 @@
+# Ignore confs but the example
 *.conf
 ~example.conf
+
+# Do not track VIM swaps...
+*.swp
