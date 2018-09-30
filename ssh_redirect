@@ -13,7 +13,7 @@
 #              https://www.howtoing.com/concatenate-two-string-variables-in-bash-script
 #
 
-the_cmd="autossh";
+the_cmd="autossh -v";
 
 # Read config
 source ${1};
@@ -41,6 +41,11 @@ if [ ! ${identity_file} ]; then
     echo "Use default identity.";
 else
     the_cmd=${the_cmd}" -i ${identity_file}";
+fi
+
+# If custom options
+if [ ${ssh_client_options} ]; then
+   the_cmd=${the_cmd}" ${ssh_client_options}";
 fi
 
 # Setup host and user
